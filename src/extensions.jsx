@@ -1,27 +1,23 @@
 /** @jsx createElement */
 import { createElement } from 'elliptical'
-import { Command, File } from 'lacona-phrases'
+import { Command, Directory } from 'lacona-phrases'
 import { callSystem } from 'lacona-api'
 
 export const OpenTerminalAt = {
   extends: [Command],
 
   execute (result) {
-    var fp = result.filepath
-    if (fp) {
-      var cmd = (
-        'if [[ -d "' + fp + '" ]]; then ' +
-          'open -a iTerm "' + fp + '"; ' +
-        'elif [[ -f "' + fp + '" ]]; then ' +
-          'open -a iTerm "$(dirname "' + fp + '")"; ' +
-        'else ' +
-          'osascript -e \'display notification "Failed to run Lacona command"\'; ' +
-        'fi '
-      )
-    }
-    else {
-      var cmd = "open -a iTerm"
-    }
+    var path = result.path
+    var cmd = (
+      'if [[ -d "' + path + '" ]]; then ' +
+        'open -a iTerm "' + path + '"; ' +
+      'elif [[ -f "' + path + '" ]]; then ' +
+        'open -a iTerm "$(dirname "' + path + '")"; ' +
+      'else ' +
+        'osascript -e \'display notification "Failed to run Lacona command"\'; ' +
+      'fi '
+    )
+
     console.log('Launching iterm')
     callSystem({command: "/bin/bash", args: ['-c', cmd]}, function(){})
   },
@@ -30,7 +26,7 @@ export const OpenTerminalAt = {
     return (
       <sequence>
         <literal text='Terminal at path ' />
-        <File id='filepath' />
+        <Directory id='path' />
       </sequence>
     )
   }
